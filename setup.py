@@ -13,6 +13,7 @@ setup(
     license='MIT',  # Chose a license from here: https://help.github.com/articles/licensing-a-repository
     description='A python wrapper for UPBit',
     long_description=long_description,
+    long_description_content_type='text/markdown',
     author='Jungwoo Song',
     author_email='timepercent24@gmail.com',
     url='https://github.com/user/reponame',  # Provide either the link to your github or to your website
