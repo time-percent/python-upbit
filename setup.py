@@ -7,18 +7,17 @@ long_description = (here / 'README.md').read_text(encoding='utf-8')
 
 
 setup(
-    name='python-upbit',
+    name='python-upbit-timepercent24',
     packages=['upbit'],
-    version='0.1',
-    license='MIT',  # Chose a license from here: https://help.github.com/articles/licensing-a-repository
+    version='0.1.0',
+    license='MIT',
     description='A python wrapper for UPBit',
     long_description=long_description,
     long_description_content_type='text/markdown',
     author='Jungwoo Song',
     author_email='timepercent24@gmail.com',
-    url='https://github.com/user/reponame',  # Provide either the link to your github or to your website
-    download_url='https://github.com/user/reponame/archive/v_01.tar.gz',  # I explain this later on
-    keywords=['upbit', 'crypto', 'bitcoin'],  # Keywords that define your package best
+    url='https://github.com/time-percent/python-upbit',
+    keywords=['upbit', 'crypto', 'bitcoin'],
     install_requires=[
         'requests',
         'pyjwt'
@@ -28,7 +27,6 @@ setup(
     ],
     classifiers=[
         'Development Status :: 3 - Alpha',
-        # Chose either "3 - Alpha", "4 - Beta" or "5 - Production/Stable" as the current state of your package
         'Intended Audience :: Developers',
         'Topic :: Software Development :: Libraries :: Python Modules',
         'License :: OSI Approved :: MIT License',
