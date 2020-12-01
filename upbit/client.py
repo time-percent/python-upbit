@@ -4,6 +4,8 @@ import jwt
 import uuid
 import requests
 
+from ratelimit import limits, RateLimitException
+from backoff import on_exception, expo
 from typing import Mapping, Sequence
 from urllib.parse import urlencode
 
@@ -87,6 +89,8 @@ class UPBitClient:
         except ValueError:
             raise RequestException(f'Invalid Response: {response.text}')
 
+    @on_exception(expo, RateLimitException, max_tries=3)
+    @limits(calls=3, period=1)
     def _request(self, method, path, query: Mapping = None, headers: Mapping = None, **kwargs):
         """Used for private(exchange) API requests
 
@@ -108,6 +112,8 @@ class UPBitClient:
         return self._handle_response(response)
 
     @classmethod
+    @on_exception(expo, RateLimitException, max_tries=3)
+    @limits(calls=10, period=1)
     def _public_request(cls, method: str, path: str, query: Mapping = None):
         """Used for public(quotation) API requests
 
@@ -121,8 +127,9 @@ class UPBitClient:
         return cls._handle_response(response)
 
     # Exchange API
-
-    def accounts(self):
+    @on_exception(expo, RateLimitException, max_tries=3)
+    @limits(calls=15, period=1)
+    def get_accounts(self):
         """Get current account information.
 
         https://docs.upbit.com/reference#전체-계좌-조회
@@ -153,7 +160,9 @@ class UPBitClient:
         """
         return self._request('get', 'accounts')
 
-    def order_chance(self, market: str):
+    @on_exception(expo, RateLimitException, max_tries=3)
+    @limits(calls=3, period=1)
+    def get_order_chance(self, market: str):
         """List possible orders by market
 
         https://docs.upbit.com/reference#주문-가능-정보
@@ -165,6 +174,8 @@ class UPBitClient:
         }
         return self._request('get', "orders/chance", query=query)
 
+    @on_exception(expo, RateLimitException, max_tries=3)
+    @limits(calls=3, period=1)
     def get_order_info(self, uuid_: str = None, identifier: str = None):
         """Get order information. uuid_ or identifier must be provided.
 
@@ -218,7 +229,9 @@ class UPBitClient:
 
         return self._request('get', 'order', query=query)
 
-    def get_recent_trades(self, market: str, states: Sequence[str], uuids: Sequence[str], identifiers: Sequence[str],
+    @on_exception(expo, RateLimitException, max_tries=3)
+    @limits(calls=3, period=1)
+    def get_recent_orders(self, market: str, states: Sequence[str], uuids: Sequence[str], identifiers: Sequence[str],
                           kind: str, state: str = 'wait', page: int = 1, limit: int = 100, order_by: str = 'desc'):
         """Get a list of recent trades.
 
@@ -272,6 +285,8 @@ class UPBitClient:
         }
         return self._request('get', 'orders', query=query)
 
+    @on_exception(expo, RateLimitException, max_tries=3)
+    @limits(calls=3, period=1)
     def cancel_order(self, uuid_: str = None, identifier: str = None):
         """uuid_ or identifier must be provided.
 
@@ -310,12 +325,15 @@ class UPBitClient:
 
         return self._request('delete', 'order', query=query)
 
+    @on_exception(expo, RateLimitException, max_tries=3)
+    @limits(calls=3, period=1)
     def _order(self, side: str, **kwargs):
         return self._request('post', 'orders', query=kwargs.update({'side': side}))
 
-    def purchase(self, market: str, volume: int, price: int, ord_type: str, identifier: str):
+    def order(self, market: str, volume: int, price: int, ord_type: str, identifier: str):
         """
 
+        :param market:
         :param volume:
         :param price:
         :param ord_type:
@@ -350,6 +368,7 @@ class UPBitClient:
     def sell(self, market: str, volume: int, price: int, ord_type: str, identifier: str):
         """
 
+        :param market:
         :param volume:
         :param price:
         :param ord_type:
@@ -381,6 +400,8 @@ class UPBitClient:
         return self._order(side='ask', market=market, volume=volume, price=price,
                            ord_type=ord_type, identifier=identifier)
 
+    @on_exception(expo, RateLimitException, max_tries=3)
+    @limits(calls=15, period=1)
     def get_withdraws(self, **kwargs):
         """
 
@@ -424,6 +445,8 @@ class UPBitClient:
         """
         return self._request('get', 'withdraws', query=kwargs)
 
+    @on_exception(expo, RateLimitException, max_tries=3)
+    @limits(calls=15, period=1)
     def get_withdraw(self, uuid_: str, txid: str, currency: str):
         """
 
@@ -457,7 +480,7 @@ class UPBitClient:
             query['currency'] = currency
         return self._request('get', 'withdraw', query=query)
 
-    def widthdraws_chance(self, currency):
+    def get_withdraw_chance(self, currency):
         """
 
         :param currency:
@@ -513,6 +536,8 @@ class UPBitClient:
 
         return self._request('get', 'widthraws/chance', query=query)
 
+    @on_exception(expo, RateLimitException, max_tries=3)
+    @limits(calls=15, period=1)
     def withdraw_in_coin(self, currency: str, amount: int, address: str, secondary_address: str, transaction_type):
         """
 
@@ -552,6 +577,8 @@ class UPBitClient:
 
         return self._request('post', 'withdraws/coin', query=query)
 
+    @on_exception(expo, RateLimitException, max_tries=3)
+    @limits(calls=15, period=1)
     def withdraw_in_krw(self, amount: int):
         """
 
@@ -577,6 +604,8 @@ class UPBitClient:
         query = {'amount': amount}
         return self._request('post', 'withdraws/krw', query=query)
 
+    @on_exception(expo, RateLimitException, max_tries=3)
+    @limits(calls=15, period=1)
     def get_deposits(self, currency: str, state: str, uuids: Sequence[str], txids: Sequence[str],
                      limit: int, page: int, order_by: str):
         """
@@ -623,6 +652,8 @@ class UPBitClient:
 
         return self._request('get', 'deposits', query=query)
 
+    @on_exception(expo, RateLimitException, max_tries=3)
+    @limits(calls=15, period=1)
     def get_deposit(self, uuid: str, txid: str, currency: str):
         """
 
@@ -655,6 +686,8 @@ class UPBitClient:
 
         return self._request('get', 'deposit', query=query)
 
+    @on_exception(expo, RateLimitException, max_tries=3)
+    @limits(calls=15, period=1)
     def generate_coin_address(self, currency: str):
         """https://docs.upbit.com/reference#입금-주소-생성-요청
 
@@ -675,6 +708,8 @@ class UPBitClient:
 
         return self._request('post', 'deposits/generate_coin_address', query=query)
 
+    @on_exception(expo, RateLimitException, max_tries=3)
+    @limits(calls=15, period=1)
     def get_coin_addresses(self):
         """
 
@@ -703,6 +738,8 @@ class UPBitClient:
         """
         return self._request('get', 'deposits/coin_addresses')
 
+    @on_exception(expo, RateLimitException, max_tries=3)
+    @limits(calls=15, period=1)
     def get_coin_address(self, currency):
         """
 
@@ -723,7 +760,9 @@ class UPBitClient:
         }
         return self._request('get', 'deposits/coin_address', query=query)
 
-    def wallet_status(self):
+    @on_exception(expo, RateLimitException, max_tries=3)
+    @limits(calls=15, period=1)
+    def get_wallet_status(self):
         """
 
         :return: API response
@@ -743,7 +782,9 @@ class UPBitClient:
         """
         return self._request('get', 'status/wallet')
 
-    def api_keys(self):
+    @on_exception(expo, RateLimitException, max_tries=3)
+    @limits(calls=15, period=1)
+    def get_api_keys(self):
         """
 
         :return: API response
@@ -770,7 +811,7 @@ class UPBitClient:
         return UPBitClient._public_request('get', 'market/all', query=query)
 
     @staticmethod
-    def get_candle_tickers(period: str,  market: str, to: str = None, count: int = 200, price_unit: str = None):
+    def get_candles(period: str,  market: str, to: str = None, count: int = 200, price_unit: str = None):
         query = {
             'count': count,
             'market': market,

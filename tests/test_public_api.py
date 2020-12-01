@@ -13,25 +13,24 @@ def test_get_markets_not_none():
 
 
 def test_get_candle_tickers_not_none():
-    assert UPBitClient.get_candle_tickers('min1', MARKET_CODE) is not None
-    assert UPBitClient.get_candle_tickers('min3', MARKET_CODE) is not None
-    assert UPBitClient.get_candle_tickers('min5', MARKET_CODE) is not None
-    assert UPBitClient.get_candle_tickers('min15', MARKET_CODE) is not None
-    assert UPBitClient.get_candle_tickers('min10', MARKET_CODE) is not None
-    assert UPBitClient.get_candle_tickers('min30', MARKET_CODE) is not None
-    assert UPBitClient.get_candle_tickers('min60', MARKET_CODE) is not None
-    assert UPBitClient.get_candle_tickers('min240', MARKET_CODE) is not None
-    time.sleep(1)
-    assert UPBitClient.get_candle_tickers('week', MARKET_CODE) is not None
-    assert UPBitClient.get_candle_tickers('day', MARKET_CODE) is not None
-    assert UPBitClient.get_candle_tickers('day', MARKET_CODE, price_unit='KRW')
-    assert UPBitClient.get_candle_tickers('month', MARKET_CODE) is not None
+    assert UPBitClient.get_candles('min1', MARKET_CODE) is not None
+    assert UPBitClient.get_candles('min3', MARKET_CODE) is not None
+    assert UPBitClient.get_candles('min5', MARKET_CODE) is not None
+    assert UPBitClient.get_candles('min15', MARKET_CODE) is not None
+    assert UPBitClient.get_candles('min10', MARKET_CODE) is not None
+    assert UPBitClient.get_candles('min30', MARKET_CODE) is not None
+    assert UPBitClient.get_candles('min60', MARKET_CODE) is not None
+    assert UPBitClient.get_candles('min240', MARKET_CODE) is not None
+    assert UPBitClient.get_candles('week', MARKET_CODE) is not None
+    assert UPBitClient.get_candles('day', MARKET_CODE) is not None
+    assert UPBitClient.get_candles('day', MARKET_CODE, price_unit='KRW')
+    assert UPBitClient.get_candles('month', MARKET_CODE) is not None
 
 
 def test_get_candle_tickers_wrong_code():
     with pytest.raises(APIException):
-        UPBitClient.get_candle_tickers('min1', '')
-        UPBitClient.get_candle_tickers('m', '')
+        UPBitClient.get_candles('min1', '')
+        UPBitClient.get_candles('m', '')
 
 
 def test_get_recent_trade_ticks():

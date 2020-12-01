@@ -7,7 +7,7 @@ long_description = (here / 'README.md').read_text(encoding='utf-8')
 
 
 setup(
-    name='python-upbit-timepercent24',
+    name='python-upbit',
     packages=['upbit'],
     version='0.1.0',
     license='MIT',
@@ -20,7 +20,9 @@ setup(
     keywords=['upbit', 'crypto', 'bitcoin'],
     install_requires=[
         'requests',
-        'pyjwt'
+        'pyjwt',
+        'ratelimit',
+        'backoff'
     ],
     test_requires=[
         'pytest'
